@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import { auth } from '../config/firebase'
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
 
 const AuthContext = createContext()
 
@@ -19,11 +19,19 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [])
 
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider()
+    try {
+      await signInWithPopup(auth, provider)
+    } catch (error) {
+      console.error("Error signing in with Google", error)
+    }
+  }
+
   const value = {
     user,
     loading,
-    login: (email, password) => signInWithEmailAndPassword(auth, email, password),
-    signup: (email, password) => createUserWithEmailAndPassword(auth, email, password),
+    signInWithGoogle,
     logout: () => signOut(auth),
   }
 

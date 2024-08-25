@@ -1,11 +1,23 @@
+'use client'
+
 import React from 'react'
 import Link from "next/link"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { ArrowRight, Menu } from 'lucide-react'
-import { buttonVariants } from './ui/button'
+import { Button, buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 
-async function Navbar() {
+function Navbar() {
+    const { user, signInWithGoogle, logout } = useAuth()
+
+    const handleAuthAction = () => {
+        if (user) {
+            logout()
+        } else {
+            signInWithGoogle()
+        }
+    }
 
     return (
         <nav className="sticky h-16 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-sm transition-all">
@@ -38,10 +50,10 @@ async function Navbar() {
                     </div>
 
                     <div className='hidden md:flex items-center space-x-1.5'>
-                        <Link href='/' className={cn(buttonVariants({ size: "sm" }), "flex items-center justify-center group px-4")}>
-                            <span>Sign in</span>
+                        <Button onClick={handleAuthAction} className={cn(buttonVariants({ size: "sm" }), "flex items-center justify-center group px-4")}>
+                            <span>{user ? 'Sign out' : 'Sign in'}</span>
                             <ArrowRight className='ml-1.5 transform h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' />
-                        </Link>
+                        </Button>
                     </div>
                 </div>
             </MaxWidthWrapper>
