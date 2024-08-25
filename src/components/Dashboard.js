@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import firebase from '../config/firebase'
+import { db } from '../config/firebase'
+import { collection, query, where, getDocs } from 'firebase/firestore'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
@@ -11,9 +12,9 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
-        const db = firebase.firestore()
-        const snapshot = await db.collection('data').where('userId', '==', user.uid).get()
-        setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+        const q = query(collection(db, 'data'), where('userId', '==', user.uid))
+        const querySnapshot = await getDocs(q)
+        setData(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
       }
     }
     fetchData()
