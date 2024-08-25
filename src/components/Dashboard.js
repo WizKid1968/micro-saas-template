@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import firebase from '../config/firebase'
@@ -8,9 +10,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const db = firebase.firestore()
-      const snapshot = await db.collection('data').where('userId', '==', user.uid).get()
-      setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      if (user) {
+        const db = firebase.firestore()
+        const snapshot = await db.collection('data').where('userId', '==', user.uid).get()
+        setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      }
     }
     fetchData()
   }, [user])
@@ -21,6 +25,10 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error logging out:', error)
     }
+  }
+
+  if (!user) {
+    return <div>Loading...</div>
   }
 
   return (
